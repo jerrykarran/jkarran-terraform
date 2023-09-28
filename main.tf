@@ -358,7 +358,7 @@ module "autoscaling" {
   name = "myasg"
   vpc_zone_identifier = [aws_subnet.private_subnets["private_subnet_1"].id, aws_subnet.private_subnets["private_subnet_2"].id, aws_subnet.
   private_subnets["private_subnet_3"].id]
-  min_size         = 0
+  min_size         = 1
   max_size         = 1
   desired_capacity = 1
   # Launch template
