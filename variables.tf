@@ -28,3 +28,8 @@ variable "public_subnets" {
     "public_subnet_3" = 3
   }
 }
+
+variable "jk_key_pair" {
+  type    = string
+  default = "LUIT_TEST_KEYS"
+}

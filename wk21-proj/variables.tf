@@ -3,10 +3,10 @@ variable "aws_region" {
   default = "us-east-1"
 }
 
-# variable "my_keypair" {
-#   type    = string
-#   default = "LUIT_TEST_KEYS.pem"
-# }
+variable "my_keypair" {
+  type    = string
+  default = "LUIT_TEST_KEYS"
+}
 
 variable "my_instance_type" {
   description = "Type of instance for autoscaling group"
