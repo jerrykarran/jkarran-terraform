@@ -42,7 +42,7 @@ module "autoscaling" {
   source = "github.com/terraform-aws-modules/terraform-aws-autoscaling"
   # Autoscaling group
   name                      = "jk_auto_scaling_group"
-  vpc_zone_identifier       = [module.vpc.public_subnets[0], module.vpc.public_subnets[1]]
+  vpc_zone_identifier       = [module.vpc.private_subnets[0], module.vpc.private_subnets[1]]
   min_size                  = 1
   max_size                  = 1
   desired_capacity          = 1
@@ -51,14 +51,14 @@ module "autoscaling" {
   # Launch template
   create_launch_template = true
   image_id               = var.ami_for_web_server
+  key_name               = var.my_keypair
   # user_data     = file("jk_user_data.sh")
-  instance_type          = var.my_instance_type
+  instance_type   = var.my_instance_type
   security_groups = [module.security-group.security_group_id]
   tags = {
     Name = "Apache Server from ASG"
   }
 }
-
 
 module "security-group" {
   source = "github.com/terraform-aws-modules/terraform-aws-security-group"
@@ -68,20 +68,19 @@ module "security-group" {
   vpc_id      = module.vpc.vpc_id
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
-  ingress_rules       = ["https-443-tcp", "http-80-tcp"]
-  egress_rules       = ["all-all"]
+  ingress_rules       = ["https-443-tcp", "http-80-tcp", "ssh-tcp"]
+  egress_rules        = ["all-all"]
 }
 
-
 module "alb" {
-  source  = "terraform-aws-modules/alb/aws"
-  version = "~> 8.0"
-  name = "my-terraform-alb"
+  source             = "terraform-aws-modules/alb/aws"
+  version            = "~> 8.0"
+  name               = "my-terraform-alb"
   load_balancer_type = "application"
 
-  vpc_id             = module.vpc.vpc_id
-  subnets            = [module.vpc.public_subnets[0], module.vpc.public_subnets[1]]
-  security_groups    = [module.security-group.security_group_id]
+  vpc_id          = module.vpc.vpc_id
+  subnets         = [module.vpc.public_subnets[0], module.vpc.public_subnets[1]]
+  security_groups = [module.security-group.security_group_id]
   security_group_rules = {
     ingress_all_http = {
       type        = "ingress"
@@ -102,22 +101,25 @@ module "alb" {
   # access_logs = {
   #   bucket = "my-alb-logs"
   # }
-  
+
   http_tcp_listeners = [
-    # Forward action is default, either when defined or undefined
     {
-      port               = 80
-      protocol           = "HTTP"
-      target_group_index = 0
-      # action_type        = "forward"
-    },
+      port        = 80
+      protocol    = "HTTP"
+      action_type = "redirect"
+      redirect = {
+        port        = "443"
+        protocol    = "HTTPS"
+        status_code = "HTTP_301"
+      }
+    }
   ]
 
   target_groups = [
     {
-      backend_protocol = "HTTP"
-      backend_port     = 80
-      target_type      = "instance"
+      backend_protocol                  = "HTTP"
+      backend_port                      = 80
+      target_type                       = "instance"
       deregistration_delay              = 10
       load_balancing_cross_zone_enabled = false
       health_check = {

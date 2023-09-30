@@ -2,10 +2,10 @@
 #   description = "Print a Hello World text output"
 #   value       = "Hello World"
 # }
-# output "vpc_id" {
-#   description = "Output the ID for the primary VPC"
-#   value       = aws_vpc.vpc.id
-# }
+output "vpc_id" {
+  description = "Output the ID for the primary VPC"
+  value       = aws_vpc.vpc.id
+}
 
 # output "public_url" {
 #   description = "Public URL for our Web Server"
@@ -18,9 +18,9 @@
 #   .vpc.id}"
 # }
 
-# output "public_ip" {
-#   value = aws_instance.ubuntu_server.public_ip
-# }
+output "public_ip" {
+  value = aws_instance.ubuntu_server.public_ip
+}
 
 # output "public_dns" {
 #   value = aws_instance.ubuntu_server.public_dns
