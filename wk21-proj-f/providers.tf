@@ -13,7 +13,7 @@ terraform {
   #   unlock_address = "http://localhost:5000/terraform_lock/4cdd0c76-d78b-11e9-9bea-db9cd8374f3a"
   #   unlock_method  = "DELETE"
   # }
-// s3 backend setup
+
   backend "s3" {
     # bucket  = "jkbucketdevops"
     bucket = "jk-terraform-state-file"
