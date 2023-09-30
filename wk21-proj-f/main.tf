@@ -25,7 +25,7 @@ module "security-group" {
   source = "github.com/terraform-aws-modules/terraform-aws-security-group"
   # security group with internet access and assiciated with asg instances
   name        = "Security Group for Terraform"
-  description = "Allow traffic on ports 443, 80, ssh"
+  description = "Allow traffic on ports 443, 80, and ssh"
   vpc_id      = var.vpc_id
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
