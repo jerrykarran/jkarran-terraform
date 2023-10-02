@@ -15,3 +15,5 @@ terraform -lock-timeout=60s
 
 terraform init -reconfigure
 terraform init -migrate-state
+terraform state show aws_vpc.main
+terraform init -backend-config=state_configuration/dev_local.hcl -migratestate

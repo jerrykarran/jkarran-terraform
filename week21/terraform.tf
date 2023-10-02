@@ -1,9 +1,25 @@
 terraform {
+  # backend "remote" {
+  #   hostname     = "app.terraform.io"
+  #   organization = "jkarran"
+  #   workspaces {
+  #     name = "my-aws-app-wk21"
+  #   }
+  # }
+  backend "s3" {
+    # bucket  = "jkbucketdevops"
+    bucket = "jk-terraform-state-file"
+    key    = "jkarran/state-file"
+    region = "us-east-1"
+
+    dynamodb_table = "terraform-locks"
+    encrypt        = true
+  }
   required_version = ">= 1.0.0"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 3.0"
+      version = "~> 3.0"
     }
     http = {
       source  = "hashicorp/http"
