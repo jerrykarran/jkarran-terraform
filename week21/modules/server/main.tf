@@ -13,9 +13,42 @@ provider "aws" {
 #   }
 # }
 
-resource "aws_vpc" "main" {
+locals {
+  service_name = "Automation"
+  app_team     = "Cloud Team"
+  createdby    = "terraform"
+
+}
+
+resource "aws_vpc" "vpc" {
   cidr_block = "10.0.0.0/16"
   tags = {
-    "Name" = "terraform Edit"
+    "Name"      = var.vpc_name
+    "Service"   = local.service_name
+    "AppTeam"   = local.app_team
+    "CreatedBy" = local.createdby
   }
+}
+
+
+# locals {
+#   # Common tags to be assigned to all resources
+#   common_tags = {
+#     Name      = aws_vpc.main.tags.Name
+#     Service   = local.service_name
+#     AppTeam   = local.app_team
+#     CreatedBy = local.createdby
+#   }
+# }
+
+# variable "vpc_name" {
+#   type    = string
+#   default = "jk-test"
+# }
+
+resource "aws_subnet" "list_subnet" {
+  for_each          = var.env
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = each.value.ip
+  availability_zone = each.value.az
 }

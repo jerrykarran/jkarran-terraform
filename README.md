@@ -17,3 +17,6 @@ terraform init -reconfigure
 terraform init -migrate-state
 terraform state show aws_vpc.main
 terraform init -backend-config=state_configuration/dev_local.hcl -migratestate
+
+
+value = module.NAME_OF_MODULE.OUTPUT_NAME

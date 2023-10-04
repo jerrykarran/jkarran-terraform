@@ -1,13 +1,10 @@
-# output "public_ip" {
-#   description = "IP Address of server built with Server Module"
-#   value       = aws_instance.web.public_ip
-# }
+output "vpc_id" {
+  description = "Output the ID for the primary VPC"
+  value       = aws_vpc.vpc.id
+  #   sensitive   = true
+}
 
-# output "public_dns" {
-#   value = aws_instance.web.public_dns
-# }
-
-# output "size" {
-#   description = "Size of server built with Server Module"
-#   value       = aws_instance.web.instance_type
-# }
+output "phone_number" {
+  value     = var.phone_number
+  sensitive = true
+}
