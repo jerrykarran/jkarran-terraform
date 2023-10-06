@@ -51,18 +51,16 @@ locals {
 data "aws_availability_zones" "available" {}
 data "aws_region" "current" {}
 
-data "aws_s3_bucket" "data-bucket" {
-  bucket = "my-data-lookup-bucket-jkp"
-}
+
 
 #Define the VPC 
 resource "aws_vpc" "vpc" {
   cidr_block = var.vpc_cidr
 
   tags = {
-    Name        = var.vpc_name
-    Environment = "demo_environment"
-    Terraform   = "true"
+    Name        = upper(var.vpc_name)
+    Environment = upper(var.environment)
+    Terraform   = upper("true")
   }
 
   enable_dns_hostnames = true
@@ -193,7 +191,7 @@ resource "aws_instance" "ubuntu_server" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = "t2.micro"
   subnet_id                   = aws_subnet.public_subnets["public_subnet_1"].id
-  security_groups             = [aws_security_group.vpc-ping.id, aws_security_group.ingress-ssh.id, aws_security_group.vpc-web.id]
+  security_groups             = [aws_security_group.vpc-ping.id, aws_security_group.ingress-ssh.id, aws_security_group.vpc-web.id, aws_security_group.main.id]
   associate_public_ip_address = true
   # key_name                    = aws_key_pair.generated.key_name
   key_name = "LUIT_TEST_KEYS"
@@ -218,7 +216,7 @@ resource "aws_instance" "ubuntu_server" {
   # }
 
   tags = {
-    Name = "Ubuntu EC2 Server"
+    Name = "Ubuntu EC2 Server-2"
   }
 
   lifecycle {
@@ -317,7 +315,7 @@ resource "aws_instance" "web_server" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = "t2.micro"
   subnet_id                   = aws_subnet.public_subnets["public_subnet_1"].id
-  security_groups             = [aws_security_group.vpc-ping.id, aws_security_group.ingress-ssh.id, aws_security_group.vpc-web.id]
+  security_groups             = [aws_security_group.vpc-ping.id, aws_security_group.ingress-ssh.id, aws_security_group.vpc-web.id, aws_security_group.main.id]
   associate_public_ip_address = true
   # key_name                    = aws_key_pair.generated.key_name
   key_name = "LUIT_TEST_KEYS"
@@ -353,7 +351,7 @@ resource "aws_instance" "web_server_2" {
   instance_type = "t2.micro"
   subnet_id     = aws_subnet.public_subnets["public_subnet_2"].id
   tags = {
-    Name = "Web EC2 Server 2"
+    Name = "Web EC2 Server"
   }
 }
 
@@ -384,23 +382,37 @@ resource "aws_subnet" "list_subnet" {
   availability_zone = each.value.az
 }
 
-resource "aws_iam_policy" "policy" {
-  name        = "data_bucket_policy-jk"
-  description = "Deny access to my bucket"
-  policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [
-      {
-        "Effect" : "Allow",
-        "Action" : [
-          "s3:Get*",
-          "s3:List*"
-        ],
-        "Resource" : "${data.aws_s3_bucket.data-bucket.arn}"
-      }
-    ]
-  })
-}
+# resource "aws_iam_policy" "policy" {
+#   name        = "data_bucket_policy-jk"
+#   description = "Deny access to my bucket"
+#   policy = jsonencode({
+#     "Version" : "2012-10-17",
+#     "Statement" : [
+#       {
+#         "Effect" : "Allow",
+#         "Action" : [
+#           "s3:Get*",
+#           "s3:List*"
+#         ],
+#         "Resource" : "${data.aws_s3_bucket.data_bucket.arn}"
+#       }
+#     ]
+#   })
+# }
+
+# data "aws_s3_bucket" "data_bucket" {
+#   bucket = "my-data-lookup-bucket-jkp"
+# }
+
+# output "data-bucket-arn" {
+#   value = data.aws_s3_bucket.data_bucket.arn
+# }
+# output "data-bucket-domain-name" {
+#   value = data.aws_s3_bucket.data_bucket.bucket_domain_name
+# }
+# output "data-bucket-region" {
+#   value = "The ${data.aws_s3_bucket.data_bucket.id} bucket is located in ${data.aws_s3_bucket.data_bucket.region}"
+# }
 
 # output "public_ip" {
 #   value = module.server.public_ip
@@ -422,7 +434,53 @@ resource "aws_iam_policy" "policy" {
 #   value = module.server_subnet_1.public_dns
 # }
 
-output "phone_number" {
-  value     = var.phone_number
-  sensitive = true
+# output "phone_number" {
+#   value     = var.phone_number
+#   sensitive = true
+# }
+
+# variable "num_1" {
+#   type        = number
+#   description = "Numbers for function labs"
+#   default     = 88
+# }
+# variable "num_2" {
+#   type        = number
+#   description = "Numbers for function labs"
+#   default     = 73
+# }
+# variable "num_3" {
+#   type        = number
+#   description = "Numbers for function labs"
+#   default     = 52
+# }
+
+# locals {
+#   maximum = max(var.num_1, var.num_2, var.num_3)
+#   minimum = min(var.num_1, var.num_2, var.num_3, 44, 20)
+# }
+# output "max_value" {
+#   value = local.maximum
+# }
+# output "min_value" {
+#   value = local.minimum
+# }
+
+resource "aws_security_group" "main" {
+  name   = "core-global"
+  vpc_id = aws_vpc.vpc.id
+  tags = {
+    Name = "new sg"
+  }
+
+  dynamic "ingress" {
+    for_each = var.web_ingress
+    content {
+      description = ingress.value.description
+      from_port   = ingress.value.port
+      to_port     = ingress.value.port
+      protocol    = ingress.value.protocol
+      cidr_blocks = ingress.value.cidr_blocks
+    }
+  }
 }
