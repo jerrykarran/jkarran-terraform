@@ -357,25 +357,25 @@ resource "aws_instance" "web_server_2" {
   }
 }
 
-module "server" {
-  source          = "./modules/server"
-  ami             = data.aws_ami.ubuntu.id
-  size            = "t2.micro"
-  subnet_id       = aws_subnet.public_subnets["public_subnet_3"].id
-  security_groups = [aws_security_group.vpc-ping.id, aws_security_group.ingress-ssh.id, aws_security_group.vpc-web.id]
-}
+# module "server" {
+#   source          = "./modules/server"
+#   ami             = data.aws_ami.ubuntu.id
+#   size            = "t2.micro"
+#   subnet_id       = aws_subnet.public_subnets["public_subnet_3"].id
+#   security_groups = [aws_security_group.vpc-ping.id, aws_security_group.ingress-ssh.id, aws_security_group.vpc-web.id]
+# }
 
-module "server_subnet_1" {
-  source = "./modules/web_server"
-  ami    = data.aws_ami.ubuntu.id
-  # key_name = aws_key_pair.generated.key_name
-  key_name = "LUIT_TEST_KEYS"
-  user     = "ubuntu"
-  # private_key     = tls_private_key.generated.private_key_pem
-  private_key     = "LUIT_TEST_KEYS"
-  subnet_id       = aws_subnet.public_subnets["public_subnet_1"].id
-  security_groups = [aws_security_group.vpc-ping.id, aws_security_group.ingress-ssh.id, aws_security_group.vpc-web.id]
-}
+# module "server_subnet_1" {
+#   source = "./modules/web_server"
+#   ami    = data.aws_ami.ubuntu.id
+#   # key_name = aws_key_pair.generated.key_name
+#   key_name = "LUIT_TEST_KEYS"
+#   user     = "ubuntu"
+#   # private_key     = tls_private_key.generated.private_key_pem
+#   private_key     = "LUIT_TEST_KEYS"
+#   subnet_id       = aws_subnet.public_subnets["public_subnet_1"].id
+#   security_groups = [aws_security_group.vpc-ping.id, aws_security_group.ingress-ssh.id, aws_security_group.vpc-web.id]
+# }
 
 resource "aws_subnet" "list_subnet" {
   for_each          = var.env
@@ -402,25 +402,25 @@ resource "aws_iam_policy" "policy" {
   })
 }
 
-output "public_ip" {
-  value = module.server.public_ip
-}
+# output "public_ip" {
+#   value = module.server.public_ip
+# }
 
-output "public_dns" {
-  value = module.server.public_dns
-}
+# output "public_dns" {
+#   value = module.server.public_dns
+# }
 
-output "size" {
-  value = module.server.size
-}
+# output "size" {
+#   value = module.server.size
+# }
 
-output "public_ip_server_subnet_1" {
-  value = module.server_subnet_1.public_ip
-}
+# output "public_ip_server_subnet_1" {
+#   value = module.server_subnet_1.public_ip
+# }
 
-output "public_dns_server_subnet_1" {
-  value = module.server_subnet_1.public_dns
-}
+# output "public_dns_server_subnet_1" {
+#   value = module.server_subnet_1.public_dns
+# }
 
 output "phone_number" {
   value     = var.phone_number
