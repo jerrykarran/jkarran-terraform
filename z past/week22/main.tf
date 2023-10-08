@@ -58,9 +58,9 @@ resource "aws_vpc" "vpc" {
   cidr_block = var.vpc_cidr
 
   tags = {
-    Name        = upper(var.vpc_name)
-    Environment = upper(var.environment)
-    Terraform   = upper("true")
+    Name        = var.vpc_name
+    Environment = var.environment
+    Terraform   = "true"
   }
 
   enable_dns_hostnames = true
@@ -220,7 +220,7 @@ resource "aws_instance" "ubuntu_server" {
   }
 
   lifecycle {
-    ignore_changes = [security_groups]
+    create_before_destroy = true
   }
 
 

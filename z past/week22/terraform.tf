@@ -2,11 +2,15 @@ terraform {
   backend "remote" {
     hostname     = "app.terraform.io"
     organization = "jkarran"
-
     workspaces {
-      name = "week22-workspace"
+      # name = "week22-workspace"
+      name = "devops-aws-myapp-prod"
     }
   }
+
+
+
+
   # required_version = ">= 1.0.0"
   required_providers {
     aws = {
