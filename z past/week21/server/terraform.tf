@@ -1,6 +1,5 @@
 terraform {
   backend "s3" {
-    # bucket  = "jkbucketdevops"
     bucket = "jk-terraform-state-file"
     key    = "jkarran/state-file"
     region = "us-east-1"
